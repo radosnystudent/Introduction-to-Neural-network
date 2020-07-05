@@ -7,3 +7,7 @@ All projects for Introduction to Neural network theory classes conducted by dr h
 [McCulloch-Pitts neuron model](Neural%20network/mcculloch-pitts.py)
 
 [Perceptron model](Neural%20network/perceptron.py)
+
+[Gradient method](Neural%20network/gradient.py)
+
+[Boltzmann machine](Neural%20network/boltzmann.py)

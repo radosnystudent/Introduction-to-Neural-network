@@ -5,20 +5,14 @@ from random import random, randint
 temperature = 1.0
 
 
-def calculateCVector(z: list) -> list:
+def generateCVector(z: list) -> list:
     """
-    Function calculate vector based on given input vector
+    Function generate vector based on given input vector
     @param: (list of floats) - list contains 0.0 and 1.0, size = 20
-    @return: (list of floats) - calculated vector (list)
+    @return: (list of floats) - generated vector (list)
     """
-    cVector = [[None for _ in range(20)] for _ in range(20)]
-    for i in range(20):
-        for j in range(20):
-            if i != j:
-                cVector[i][j] = (z[i] - 0.5)*(z[j] - 0.5)
-            else:
-                cVector[i][j] = 0.0
-    return cVector
+
+    return [[0.0 if i != j else (z[i] - 0.5)*(z[j] - 0.5) for j in range(20)] for i in range(20)]
 
 
 def calculateNextVector(prevVector: list, cVector: list) -> list:
@@ -28,16 +22,6 @@ def calculateNextVector(prevVector: list, cVector: list) -> list:
     @param: (list of floats) - cVecotr (calculated in function calculateCVector)
     @return: (list of floats) - calculated vector (list)
     """
-    def calculateTheta(vector: list) -> float:
-        """
-        function calculate Theta
-        @param: (list of floats) vector 
-        @return: (float) calculated number
-        """
-        theta = 0.0
-        for value in vector:
-            theta += value
-        return theta
 
     result = list()
     f_value = None
@@ -48,7 +32,7 @@ def calculateNextVector(prevVector: list, cVector: list) -> list:
         for j in range(20):
             w = 2*cVector[i][j]
             u_value += w * prevVector[j]
-        u_value -= calculateTheta(cVector[i])
+        u_value -= sum(cVector[i])  # calculate Theta
 
         f_value = (lambda u: 1.0 /
                    (1.0 + pow(math.e, -1.0 * (u / temperature))))(u_value)
@@ -62,29 +46,23 @@ def calculateNextVector(prevVector: list, cVector: list) -> list:
 
 def decodeResult(vector: list) -> str:
     """
-    Function coding vector of 0.0 and 1.0 to _ and *
+    Function coding 0.0 to  and 1.0 to ■
     @param: (list) - vector of 0.0 and 1.0
     @return: (str) - coded vector of numbers
     """
-    string = f''
 
-    for ind, value in enumerate(vector):
-        if value == 0.0:
-            string += '_ '
-        else:
-            string += '* '
-        if ind in [3, 7, 11, 15, 19]:
-            string += '\n'
-    #string += '\n'
-    return string
+    return ' '.join([u"\u25A1" if value == 0.0 else u"\u25A0" for value in vector])
 
 
-z = [0.0 if i < 10 else 1.0 for i in range(20)]
+if __name__ == '__main__':
 
-cVector = calculateCVector(z)
-xVector = [randint(0, 1) * 1.0 for _ in range(20)]
-print(decodeResult(xVector))
+    z = [0.0 if i < 10 else 1.0 for i in range(20)]
 
-xVector = calculateNextVector(xVector, cVector)
-print(f'temperatura: {temperature}\n')
-print(decodeResult(xVector))
+    cVector = generateCVector(z)
+    xVector = [randint(0, 1) * 1.0 for _ in range(20)]
+    print(f'początkowy: {decodeResult(xVector)}\n')
+
+    for _ in range(10):
+        xVector = calculateNextVector(xVector, cVector)
+        print(decodeResult(xVector))
+        print(f'temperatura: {temperature}\n')

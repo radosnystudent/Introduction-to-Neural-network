@@ -1,8 +1,8 @@
 from math import pow, log
 import math
-from random import random, randint
+from random import random, randint, getrandbits
 
-temperature = 1.0
+temperature: float = 1.0
 
 
 def generateCVector(z: list) -> list:
@@ -18,29 +18,42 @@ def generateCVector(z: list) -> list:
 def calculateNextVector(prevVector: list, cVector: list) -> list:
     """
     Boltzman
-    @param: (list of floats) - previous vector from this function (first can be randomly generated)
-    @param: (list of floats) - cVecotr (calculated in function calculateCVector)
-    @return: (list of floats) - calculated vector (list)
+    @param: (list of floats) - previous vector from this function (first can be randomly generated); size = 20
+    @param: (list of floats) - cVecotr (generated in function generateCVector); size = 20
+    @return: (list of floats) - calculated vector (list); size = 20
     """
 
-    result = list()
-    f_value = None
+    result: list = list()
+    f_value: any = None
 
     for i in range(20):
 
         u_value = 0.0
+
+        # obliczanie wag, potrzebnych do wyliczenia wartości u
         for j in range(20):
             w = 2*cVector[i][j]
             u_value += w * prevVector[j]
-        u_value -= sum(cVector[i])  # calculate Theta
+        # odjęcie wartości progowej, która jest sumą wartości wektora C[i]
+        u_value -= sum(cVector[i])
 
+        # obliczenie wartości funkcji f dla argumentu u
         f_value = (lambda u: 1.0 /
-                   (1.0 + pow(math.e, -1.0 * (u / temperature))))(u_value)
+                   (1.0 + math.exp(u / temperature)))(u_value)
 
-        if f_value > randint(0, 10) * 1.0:
-            result.append(1.0)
+        # jeśli temperatura jest większa od 1.0, MB działa losowo,
+        # w przypadku gdy jest mniejsza od 1.0 działa według sieci Hopfielda
+
+        if temperature >= 1.0:
+            if f_value > randint(0, 10) * 1.0:
+                result.append(1.0)
+            else:
+                result.append(0.0)
         else:
-            result.append(0.0)
+            if u_value > 0.0:
+                result.append(1.0)
+            elif u_value < 0.0:
+                result.append(0.0)
     return result
 
 
@@ -56,13 +69,14 @@ def decodeResult(vector: list) -> str:
 
 if __name__ == '__main__':
 
-    z = [0.0 if i < 10 else 1.0 for i in range(20)]
+    z: list = [0.0 if i < 10 else 1.0 for i in range(20)]
 
     cVector = generateCVector(z)
-    xVector = [randint(0, 1) * 1.0 for _ in range(20)]
+    xVector: list = [randint(0, 1) * 1.0 for _ in range(20)]
     print(f'początkowy: {decodeResult(xVector)}\n')
 
     for _ in range(10):
+        temperature = randint(1, 50) / 10
         xVector = calculateNextVector(xVector, cVector)
         print(decodeResult(xVector))
         print(f'temperatura: {temperature}\n')

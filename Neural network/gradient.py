@@ -1,8 +1,8 @@
 from math import pow
 
 # stała c i eps
-c_const = 0.01
-eps_const = 0.0000001
+c_const: float = 0.01
+eps_const: float = 0.0000001
 
 # Funkcja przyjmuje dwa argumenty
 # wejscie:
@@ -20,14 +20,12 @@ def gradient(inputVec: list, functionNumber: int) -> str:
     @return: (str) - string message with function value
     """
 
-
-    newVector = [0.0, 0.0]
+    newVector: list = [0.0, 0.0]
 
     while True:
         localVec = inputVec[:]  # tworzenie kopii wektora
 
-        if functionNumber == 1:
-            # obliczanie wartosci jesli badamy funkcje 1
+        if functionNumber == 1: # obliczanie wartosci jesli badamy funkcje 1
             # stała c przemnożona przez pochodna dla x1 funkcji pierwszej
             newVector[0] = inputVec[0] - c_const * \
                 (lambda vector: 4*vector[0] - 2*vector[1] - 2)(inputVec)
@@ -35,8 +33,7 @@ def gradient(inputVec: list, functionNumber: int) -> str:
             newVector[1] = inputVec[1] - c_const * \
                 (lambda vector: 2*vector[1] - 2*vector[0])(inputVec)
 
-        elif functionNumber == 2:
-            # obliczanie wartosci jesli badamy funkcje 2
+        elif functionNumber == 2: # obliczanie wartosci jesli badamy funkcje 2        
             # stała c przemnożona przez pochodna dla x1 funkcji drugiej
             newVector[0] = inputVec[0] - c_const * (lambda vector: 2*pow(
                 vector[0], 3) - pow(vector[0], 2) - vector[0])(inputVec)

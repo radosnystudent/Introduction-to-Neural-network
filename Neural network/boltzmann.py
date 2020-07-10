@@ -65,9 +65,6 @@ def calculateNextVector(
     result: list = list()
 
     for i in range(20):
-        # jeśli temperatura jest większa od 1.0, MB działa losowo,
-        # w przypadku gdy jest mniejsza od 1.0 działa według sieci Hopfielda
-
         if (
             calculateF(
                 calculateUvalue(prevVector, i, wVector, thetaVector), temperature

@@ -13,6 +13,8 @@ T - temperatura
 0.0 , gdy u(t) < 0
 '''
 
+# rozmmiar wektorów
+N: float = 20
 
 def generateCVector(z: list) -> list:
     """
@@ -20,8 +22,8 @@ def generateCVector(z: list) -> list:
     """
 
     return [
-        [0.0 if i == j else (z[i] - 0.5) * (z[j] - 0.5) for j in range(20)]
-        for i in range(20)
+        [0.0 if i == j else (z[i] - 0.5) * (z[j] - 0.5) for j in range(N)]
+        for i in range(N)
     ]
 
 
@@ -45,7 +47,7 @@ def calculateUvalue(
     """
     wartosc u - suma (wektor wag razy stan) - wartosc theta
     """
-    return sum([wVector[row][j] * prevVector[j] for j in range(20)]) - thetaVector[row]
+    return sum([wVector[row][j] * prevVector[j] for j in range(N)]) - thetaVector[row]
 
 
 def calculateF(u: float, temperature: float) -> float:
@@ -64,7 +66,7 @@ def calculateNextVector(
 
     result: list = list()
 
-    for i in range(20):
+    for i in range(N):
         if (
             calculateF(
                 calculateUvalue(prevVector, i, wVector, thetaVector), temperature
@@ -87,17 +89,22 @@ def decodeResult(vector: list) -> str:
 
 if __name__ == "__main__":
 
-    temperature: float = 0.1
+    temperatures: list = [0.1, 1.5, 4.0, 20.0]
+    temperatureIndex = 0
 
-    z: list = [0.0 if i < 10 else 1.0 for i in range(20)]
+    z: list = [0.0 if i < 10 else 1.0 for i in range(N)]
 
     cVector: list = generateCVector(z)
-    xVector: list = [randint(0, 1) * 1.0 for _ in range(20)]
+    xVector: list = [randint(0, 1) * 1.0 for _ in range(N)]
 
     wVector: list = calculateW(cVector)
     thetaVector: list = calculateTheta(cVector)
     print(f"początkowy: {decodeResult(xVector)}\n")
 
-    for _ in range(10):
-        xVector: list = calculateNextVector(xVector, wVector, thetaVector, temperature)
+    for i in range(N):
+        xVector: list = calculateNextVector(xVector, wVector, thetaVector, temperatures[temperatureIndex])
+        if i % 5 == 0:
+            print(f'temperatura: {temperatures[temperatureIndex]}')
+            if temperatureIndex + 1 < len(temperatures):
+                temperatureIndex += 1
         print(decodeResult(xVector))
